@@ -1,27 +1,37 @@
 //  * **Word**: Used to create an object representing the current word the user is attempting to guess. This should contain word specific logic and data
 
 
-//pick a word to be guessed. split it into each letter that needs to be guessed and display the appropriate blank space placehodlers 
+const Letter = require("./letter");
 
+function Word(word) {
+    this.word = word;
+    this.guessesLeft = 8;
+}
 
-
-
-const words = {
-    wordBank: ["Darth Vader", "Leia Organa", "Luke Skywalker", "Han Solo", "Chewbacca", "Boba Fett", "Lando Calrissian", "Admiral Akbar"],
-    randomWord: function () {
-        //pick a random word from the word bank
-        let word = this.wordBank[Math.floor(Math.random() * this.wordBank.length)];
-        //add functionality to avoid repeating words twice in a row?
-        return word
+Word.prototype.toLetters = function () {
+    for (let i = 0; i < this.word.length; i++) {
+        this[i] = new Letter(this.word[i]);
     }
-};
+}
 
+Word.prototype.check = function (guess) {
+    for (let i = 0; i < this.word.length; i++) {
+        this[i].check(guess)
+    }
+    this.guessesLeft--;
+}
 
+Word.prototype.update = function () {
+    this.underscores = "";
+    for (let i = 0; i < this.word.length; i++) {
+        this.underscores += this[i].display()
+    }
+}
 
+Word.prototype.stats = function () {
+    process.stdout.write('\033c');
+    console.log("If you lose, you DIE!\n\n", `${this.underscores}`);
+    console.log("\n", `${this.guessesLeft} guesses left!`, "\n")
+}
 
-
-
-
-
-
-console.log(getWord.currentWord)
+module.exports = Word;

@@ -1,18 +1,63 @@
-//pick a word to be guessed. split it into each letter that needs to be guessed and display the appropriate blank space placehodlers 
+const Word = require("./word");
+const Letter = require("./letter");
+const inquirer = require("inquirer");
 
-
-
-
-const getWord = {
-    wordBank: ["Darth Vader", "Leia Organa", "Luke Skywalker", "Han Solo", "Chewbacca", "Boba Fett", "Lando Calrissian", "Admiral Akbar"],
-    previousWord: '',
-    pickWord: function () {
-        //pick a random word from the word bank
-        let word = this.wordBank[Math.floor(Math.random() * this.wordBank.length)];
-        //add functionality to avoid repeating words twice in a row?
-        return word
+let rando = {
+    wordBank: ['bananas', "naners", 'boonaners'],
+    randomWord: function () {
+        return this.wordBank[Math.floor(Math.random() * this.wordBank.length)];
     }
-};
+}
+
+let randomWord = rando.randomWord();
+
+let wordObj = new Word(randomWord);
+
+wordObj.toLetters();
+
+function gameOn() {
+    wordObj.update();
+    wordObj.stats();
+    if (wordObj.word === wordObj.underscores) {
+        console.log("Winning!");
+        playAgain();
+    } else if (wordObj.guessesLeft) {
+        inquirer.prompt([
+            {
+                message: "Pick a letter, any letter!",
+                type: "input",
+                name: "guess"
+            }
+        ]).then(function (res) {
+            let guess = res.guess;
+            wordObj.check(guess);
+            gameOn();
+        })
+    } else {
+        console.log("Game Over Man, Game Over!");
+        console.log(`The word was: ${wordObj.word}`);
+        playAgain()
+    }
+}
+
+//need to sort out why this isnt working properly
+
+//function playAgain() {
+//    inquirer.prompt([
+//        {
+//            message: "Play again?",
+//            tpye: "list",
+//            choices: ["Yes", "No"],
+//            name: "choice"
+//            }
+//        ]).then(function (res) {
+//        if (res.choice === "Yes") {
+//            gameOn();
+//        } else {
+//            process.exit();
+//        }
+//    })
+//}
 
 
 
@@ -20,6 +65,4 @@ const getWord = {
 
 
 
-
-
-console.log(getWord.currentWord)
+gameOn();
